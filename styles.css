@@ -1,0 +1,167 @@
+html {
+  scroll-behavior: smooth;
+}
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+/* Intro section */
+.intro-section {
+  background-color: #E8EAF6;
+  padding: 15px;
+  margin: 15px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Data Table */
+.data-info {
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.data-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.data-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Data trends */
+.data-trends {
+  font-family: Arial, sans-serif;
+  margin: 15px;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.data-trends h2 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.data-trends p,
+.data-trends ul {
+  color: #666;
+  line-height: 1.6;
+}
+
+.data-trends ul {
+  list-style-type: disc;
+  margin-left: 15px;
+}
+
+/* Code annotation block */
+.code-annotation-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.code-block,
+.annotation-block {
+  flex: 1;
+  padding: 10px;
+  margin: 5px;
+  box-sizing: border-box;
+}
+
+.code-block {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.annotation-block {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  font-family: Arial, sans-serif;
+  overflow-y: auto;
+}
+
+
+/* Table for covariate pie chart */ 
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.coefficients {
+  font-weight: bold;
+}
+
+.estimate {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.p_value {
+  font-weight: bold;
+  color: #e81e1e;
+}
+
+.signif_codes {
+  font-weight: bold;
+}
+
+
+/* For coding annotations section */ 
+.code-annotation-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.code-block {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.annotation-block {
+  flex: 1;
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.annotation-block li {
+  margin-bottom: 10px;
+}

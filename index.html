@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> California Housing Data </title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+
+
+<body>
+  <div class="intro-section">
+    <h2>Housing Data Trends Analysis</h2>
+    <h3> Joseph Zhang, CS448B Fall 2023 Final Project</h3>
+    <p>Welcome to an analysis of California's housing market based on the 1990 census data. This project delves into the
+      intricate dynamics of housing prices, demographic trends, and socio-economic factors. Our comprehensive study aims
+      to shed light on the multifaceted aspects of California's real estate market, providing valuable insights for
+      policymakers, investors, and the general public. We want to unravel the complexities of housing affordability,
+      market predictions, and their broader implications on communities across California.</p>
+  </div>
+
+
+  <div class="data-trends">
+    
+    <p><strong>Goals:</strong></p>
+    <ul>
+      <li><strong>Inform Policy Decisions:</strong> Understand the impact of geographic locations on housing prices and
+        income levels, helping to guide urban planning and policy-making.</li>
+      <li><strong>Guide Investment Strategies:</strong> Help investors identify potential areas for investment, based on
+        factors like proximity to the ocean, population density, and median income levels.</li>
+      <li><strong>Aid in Housing Market Predictions:</strong> Enable predictions of housing prices and market trends,
+        assisting both buyers and sellers in making informed decisions.</li>
+      <li><strong>Address Socio-economic Issues:</strong> Identify areas with lower income levels and potentially poorer
+        living conditions, guiding social programs and aid.</li>
+    </ul>
+    <p>The California 1990 census data was collected through a comprehensive survey distributed to households across the
+      state, aiming to capture demographic, economic, and housing-related information. During this process, individuals
+      were asked to fill out questionnaires that included questions about the number of people living in the household,
+      their ages, ethnicities, incomes, housing conditions, and more.</p>
+    <p>Several issues could impact the reliability and accuracy of the dataset for our purposes. There might be
+      inaccuracies and inconsistencies due to self-reporting, as residents might not have accurately filled out the forms,
+      either mistakenly or deliberately. The dataset might also suffer from non-response bias if certain demographic
+      groups were less likely to complete and return the census forms.</p>
+  </div>
+
+  <div class="data-info">
+    <p>The data pertains to the houses found in a given California district and some summary stats about them based on the
+      1990 census data after some data cleaning. The columns are as follows:</p>
+    <table class="data-table">
+      <tr>
+        <th>Column Name</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>longitude</td>
+        <td>A measure of how far west a house is; a higher value is farther west</td>
+      </tr>
+      <tr>
+        <td>latitude</td>
+        <td>A measure of how far north a house is; a higher value is farther north</td>
+      </tr>
+      <tr>
+        <td>housingMedianAge</td>
+        <td>Median age of a house within a block; a lower number is a newer building</td>
+      </tr>
+      <tr>
+        <td>totalRooms</td>
+        <td>Total number of rooms within a block</td>
+      </tr>
+      <tr>
+        <td>totalBedrooms</td>
+        <td>Total number of bedrooms within a block</td>
+      </tr>
+      <tr>
+        <td>population</td>
+        <td>Total number of people residing within a block</td>
+      </tr>
+      <tr>
+        <td>households</td>
+        <td>Total number of households, a group of people residing within a home unit, for a block</td>
+      </tr>
+      <tr>
+        <td>medianIncome</td>
+        <td>Median income for households within a block of houses (measured in tens of thousands of US Dollars)</td>
+      </tr>
+      <tr>
+        <td>medianHouseValue</td>
+        <td>Median house value for households within a block (measured in US Dollars)</td>
+      </tr>
+      <tr>
+        <td>oceanProximity</td>
+        <td>Location of the house in distance (miles) from the ocean/sea</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section" id="sliders-description">
+    <h3>Sliders for Dynamic Data Filtering</h3>
+    <p>The interface features intuitive sliders offering a dynamic way to filter data displayed on the map and scatter
+      plot. These sliders represent key variables such as median house value, median income, and housing median age,
+      allowing for a tailored view of the housing market.</p>
+  </div>
+
+  <div>
+    <label for="ageSlider">Maximum Housing Age: </label>
+    <input type="range" id="ageSlider" name="ageSlider" min="0" max="70">
+    <span id="ageOutput"> </span> years
+  </div>
+  
+
+  <div>
+    <label for="valueSlider">Maximum House Value: (Dollars) </label>
+    <input type="range" id="valueSlider" name="valueSlider" min="10000" max="500000" value="250000">
+    <span id="valueOutput">250000</span>
+  </div>
+
+
+
+  <div class="section" id="scatter-plot-description">
+    <h3>Interactive Scatter Plot: Median House Value vs Median Income</h3>
+    <p>The interactive scatter plot plots median house value against median income in conjunction with a visual map for where the houses are located, revealing relationships between these
+      variables. Responsive to slider adjustments, it aids in identifying trends and outliers in the housing market across
+      California.</p>
+  </div>
+
+  <div id="scatterplot"></div>
+
+  <div id="californiaMap"></div>
+
+  <p> From this slider, we can see that our houses are distributed all over California. We note that there doesn't seem to be any strong particulars about houses close to
+    the water; that is, closeness to the water does not necessarily seem to cause an increase in housing prices as much as we would have originally thought. Feel free to 
+    play with the sliders to observe this phenomenon. 
+  </p>
+
+  <div class="intro-section">
+    <h3> Data Processing and Feature Engineering </h3>
+    <p> To find certain relations between our different columns, we perform some basic data science modeling. By applying the ordinary least squares technique, we aim to quantify the impact of various predictors, such as median income, population
+    density, and proximity to the ocean, on housing prices. This approach not only offers clarity on the strength and
+    significance of these predictors but also provides a solid statistical foundation for observing the data. We attach some of the following R code for some basic data analysis.</p>
+  </div>
+
+  <div class = "code-annotation-container">
+    <div class="code-block"> 
+      <pre><code>
+        housing_data <- read.csv("housing.csv") 
+        # Set seed for reproducibility set.seed(123) 
+        # Splitting the dataset into training (80%) and holdout (20%) 
+  
+        split_index <- sample.int(n=nrow(housing_data), size=floor(0.8 * nrow(housing_data)),
+          replace=FALSE) training_set <- housing_data[split_index, ] holdout_set <- housing_data[-split_index, ] 
+        
+        # Function for data preparation (feature engineering) 
+        
+        prepare_data <- function(df) { df <- df %>%
+        mutate(ocean_proximity = factor(ocean_proximity)) %>%
+        mutate(near_water = ifelse(ocean_proximity %in% c("NEAR BAY", "NEAR OCEAN", "ISLAND"), 1, 0)) %>%
+        mutate(near_water = as.factor(near_water)) %>%
+        select(-ocean_proximity) # Remove the original 'ocean_proximity' column
+      
+        # Creating interaction and ratio terms
+        df <- df %>%
+          filter(is.na(total_bedrooms) == FALSE) %>%
+          mutate(
+          Rooms_per_Household = total_rooms / households,
+          Population_per_Household = population / households,
+          Bedrooms_to_Rooms_Ratio = total_bedrooms / total_rooms,
+          age_income_interaction = housing_median_age * median_income
+          ) %>%
+          select(-c(total_rooms, total_bedrooms, population, households))
+      
+          return(df)
+          }
+      
+        # Function to standardize numeric columns of a dataframe, excluding the outcome variable
+        standardize_data <- function(df, outcome_var) { numeric_columns <- sapply(df, is.numeric) 
+          # Exclude the outcome variable from standardization 
+          numeric_columns[outcome_var] <- FALSE df[numeric_columns] <- scale(df[numeric_columns]) return(df) } 
+          # Apply the data preparation function to both the training and holdout sets 
+          training_set_prepared <- prepare_data(training_set) holdout_set_prepared <- prepare_data(holdout_set) 
+
+          # Apply standardization to the training and holdout datasets, excluding the outcome variable 
+          training_set_prepared <- standardize_data(training_set_prepared, "median_house_value" ) 
+          holdout_set_prepared <-standardize_data(holdout_set_prepared, "median_house_value" )
+        
+        # Model for OLS
+        ols_model <- lm(median_house_value ~ ., data=training_set_prepared) 
+        # Summary of the model to get coefficients
+          summary(ols_model) 
+        # Extracting coefficients coefficients <- coef(ols_model) cor_matrix <- cor(training_set_prepared[,
+          sapply(training_set_prepared, is.numeric)])
+          
+          corrplot(cor_matrix, method="color" , type="upper" , order="hclust" ,
+          tl.col="black" , tl.srt=45, diag=TRUE) # include diagonal
+        </code></pre>
+    </div>
+
+    <div class="annotation-block">
+      <li>
+        We first prepare the data by combining similar terms for ocean_proximity, which is a very important predictor of price of a house. Houses closer to water should be more expensive. 
+      </li>
+      <li>
+        We then create interaction terms between some of the basic columns to help us visualize more complex relations in the data such as Bedrooms_to_Rooms_Ratio, which helps us figure out
+        if more bedrooms directly contributes to a higher housing cost. 
+      </li>
+      <li>
+        We standardize the data by excluding unnecessary points. 
+      </li>
+      <li>
+        We then fit our ordinary least squares model, the simplest model that tracks how each column contributes to the final estimation of price.
+      </li>
+      <li>
+        We then create a correlation plot of how variables correlate to each other. This helps us observe if any variables may have implicit relations. 
+      </li>
+    </div>
+  </div>
+
+  <div class="intro-section">
+    <h3> Correlation Matrix</h3>
+    <p> We generate a correlation matrix that shows possible interaction or relation between terms. You can use the dropdown menu on the right to check various 
+      correlation values between different terms. 
+    </p>
+  </div>
+
+<div style="display: flex; gap: 20px;">
+  
+
+  <!-- Left Section -->
+  <div style="flex: 1;">
+    <!-- Dropdown for Category 1 -->
+    <select id="category1">
+      <option value="longitude">Longitude</option>
+      <option value="rooms_per_household">Rooms per Household</option>
+      <option value="age_income_interaction">Age Income Interaction</option>
+      <option value="median_income">Median Income</option>
+      <option value="median_house_value">Median House Value</option>
+      <option value="latitude">Latitude</option>
+      <option value="population_per_household">Population per Household</option>
+      <option value="housing_median_age">Housing Median Age</option>
+      <option value="bedrooms_to_rooms_ratio">Bedrooms to Rooms Ratio</option>
+    </select>
+
+    <!-- Dropdown for Category 2 -->
+    <select id="category2">
+      <option value="longitude">Longitude</option>
+      <option value="rooms_per_household">Rooms per Household</option>
+      <option value="age_income_interaction">Age Income Interaction</option>
+      <option value="median_income">Median Income</option>
+      <option value="median_house_value">Median House Value</option>
+      <option value="latitude">Latitude</option>
+      <option value="population_per_household">Population per Household</option>
+      <option value="housing_median_age">Housing Median Age</option>
+      <option value="bedrooms_to_rooms_ratio">Bedrooms to Rooms Ratio</option>
+    </select>
+
+    <button onclick="getCorrelation()">Get Correlation</button>
+
+    <!-- Display Correlation Result -->
+    <div id="correlationResult" style="padding: 10px; border: 1px solid #ccc;"></div>
+
+
+  </div>
+  <!-- Right Section -->
+  <div style="flex: 1;">
+    <img src="correlation_matrix.png" width="600" height="400">
+  </div>
+
+  
+</div>
+<p>
+  Now we can play around with our correlation values in our inputs settings to check the various correlation values
+  between covariates. We provide a final covariate map on the right which showcases all of our connections between various covariates. As you can see, age_income_interaction
+  and housing_median_age are highly correlated. This is because of the way we calculated the interaction term age_income_interaction, which makes sense. Looking at other 
+  interaction values would give us a great sense of how the data might be structured and what relationships are behind the data. 
+</p>
+
+
+<div class="intro-section">
+  <h3> Coeffient Estimates Visualization </h3>
+  <p> After examining our various correlations, we observe different coefficient values and how powerfully they contribute towards the final cost of a house. </p>
+</div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+    <div style="flex: 1;">
+      <pre>
+        Call:
+        lm(formula = median_house_value ~ ., data = training_set_prepared)
+  
+        Residuals:
+             Min       1Q   Median       3Q      Max 
+        -638694.0  -44067.0  -12322.0   30922.0  427734.0 
+  
+        Coefficients:
+                                 Estimate Std. Error t value Pr(>|t|)    
+        (Intercept)              203968.0      669.2 304.811  < 2e-16 ***
+        longitude                -79281.5     1868.6 -42.427  < 2e-16 ***
+        latitude                 -82707.0     1834.2 -45.091  < 2e-16 ***
+        housing_median_age         1555.2     1266.9   1.228     0.22    
+        median_income             72588.8     1473.4  49.267  < 2e-16 ***
+        near_water1               11641.6     1517.1   7.674 1.77e-14 ***
+        Rooms_per_Household        7762.2      632.2  12.279  < 2e-16 ***
+        Population_per_Household  -4335.5      557.9  -7.771 8.25e-15 ***
+        Bedrooms_to_Rooms_Ratio   21268.5      767.1  27.724  < 2e-16 ***
+        age_income_interaction    14863.2     1647.0   9.024  < 2e-16 ***
+  
+        Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+  
+        Residual standard error: 71250 on 16339 degrees of freedom
+        Multiple R-squared:  0.6187, Adjusted R-squared:  0.6184 
+        F-statistic:  2945 on 9 and 16339 DF,  p-value: < 2.2e-16
+      </pre>
+    </div>
+  
+    <div style="flex: 1;">
+      <div id="coefficient-pie-chart" style="width: 600px; height: 600px;"></div>
+    </div>
+
+    <p>
+      
+      The OLS analysis reveals the estimated coefficients for each predictor, their statistical significance, and their impact
+      on predicting house prices. Each coefficient represents the change in the dependent variable (median house value) associated with a one-unit change
+      in the corresponding independent variable while holding all other variables constant. This means that we can visualize the data based on our predictions
+      in a naive manner. <br>
+      <br>
+
+      As an example, for each year of our housing age, our cost of our house increases by 1555 dollars! <br>
+      <br>
+      This may seem counterintuitive, since newer houses are
+      supposedly pricier, but it's possible that older houses are in more prime areas. 
+      
+      Notably, variables such as "longitude," "latitude," "median_income," 
+      "Rooms_per_Household," "Bedrooms_to_Rooms_Ratio," and "age_income_interaction" demonstrate strong statistical significance, implying their
+      substantial influence on housing costs. Based on our predictors, we can see that the intercept term is the most significant contributor towards housing
+      prices. This makes sense, since we can just assume the base price of purchasing any given house is contributed to by the intercept. A house's starting
+      cost is around 200,000 dollars. Hover over each area on the covariate value graph to see what percentage of a total housing cost each piece would cost. <br> 
+      <br> 
+
+    </p>
+  </div>
+
+  <div class="intro-section">
+    <h3> Concluding Remarks</h3>
+    <p> We can now see that <b> figuring out housing pricing is extremely complex and more difficult than </b> just simply saying "will the amount of rooms contribute to an expensive 
+      house" or "will being near water drive up the price". From our data analysis, we can see that yes, both of these questions drive the overall cost of a house, but it is
+      precisely other factors that seem to be highly correlational with the cause of house prices: the intercept term (meaning that houses are just overall expensive) and
+      the median income of the area. Further analysis would need to be done to observe the effects of the other studied coefficients, and we would need further data to see
+      if these predictors directly <b> cause</b> the prices of the houses. 
+    </p>
+  </div>
+  
+  
+  
+  
+
+
+
+
+  
+  <script src="correlation.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
